@@ -8,7 +8,7 @@
 
 		See LICENSE-MIT.txt and LICENSE-GPL.txt
 	-->
-	<div :class="overlay_classes" v-show="is_open" v-on:click="_onOverlayClick">
+	<div :class="overlay_classes" v-show="is_open" @mousedown="_onOverlayMouseDown" v-on:click="_onOverlayClick">
 		<div :class="modal_classes" :style="modal_style">
 			<div class="sweet-box-actions">
 				<!-- Custom Actions -->
@@ -176,6 +176,7 @@
 				is_open: false,
 				is_bouncing: false,
 				tabs: [],
+				last_mouse_down: null,
 
 				backups: {
 					body: {
@@ -320,7 +321,13 @@
 				document.body.style.overflow = this.backups.body.overflow
 			},
 
-			_onOverlayClick(event) {
+			_onOverlayMouseDown(event) {
+				this.last_mouse_down = event;
+			},
+
+			_onOverlayClick() {
+				const event = this.last_mouse_down;
+
 				if (!event.target.classList || event.target.classList.contains('sweet-modal-clickable')) {
 					if (this.blocking) {
 						if (this.pulseOnBlock) this.bounce()
